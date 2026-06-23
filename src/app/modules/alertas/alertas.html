@@ -1,0 +1,96 @@
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <h4 class="mb-0 card-title-brand"><i class="bi bi-exclamation-triangle me-2"></i>Alertas de inventario</h4>
+  <div class="d-flex align-items-center gap-2">
+    <label class="small text-muted">Vencen en</label>
+    <select class="form-select form-select-sm" style="width:auto" [(ngModel)]="dias" (change)="cargar()">
+      <option [ngValue]="30">30 dias</option>
+      <option [ngValue]="60">60 dias</option>
+      <option [ngValue]="90">90 dias</option>
+    </select>
+    <button class="btn btn-sm btn-outline-secondary" (click)="cargar()"><i class="bi bi-arrow-clockwise"></i></button>
+  </div>
+</div>
+
+<!-- Resumen -->
+<div class="row g-3 mb-3">
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f6ecd9;color:#d97706"><i class="bi bi-clock-history"></i></div>
+      <div><div class="stat-num">{{ resumen().por_vencer }}</div><div class="stat-lbl">Lotes por vencer</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fee2e2;color:#dc2626"><i class="bi bi-x-octagon"></i></div>
+      <div><div class="stat-num">{{ resumen().vencidos }}</div><div class="stat-lbl">Lotes vencidos</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f9e5e5;color:#731A1B"><i class="bi bi-box-seam"></i></div>
+      <div><div class="stat-num">{{ resumen().stock_critico }}</div><div class="stat-lbl">Stock critico</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Proximos a vencer -->
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white fw-semibold"><i class="bi bi-clock-history me-1"></i>Lotes proximos a vencer / vencidos</div>
+  <div class="table-responsive">
+    <table class="table table-hover tabla-compacta mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Codigo</th><th>Producto</th><th>Lote</th><th>Vencimiento</th>
+          <th class="text-end">Dias</th><th class="text-end">Disponible</th><th class="text-end">Costo</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of porVencer(); track p.capa_id) {
+          <tr [class.table-danger]="p.vencido" [class.table-warning]="!p.vencido">
+            <td>{{ p.codigo }}</td>
+            <td>{{ p.producto }}</td>
+            <td>{{ p.lote }}</td>
+            <td>{{ p.fecha_vencimiento }}</td>
+            <td class="text-end">
+              @if (p.vencido) { <span class="badge text-bg-danger">Vencido</span> }
+              @else { {{ p.dias_restantes }} d }
+            </td>
+            <td class="text-end">{{ p.cantidad_disponible }}</td>
+            <td class="text-end">{{ p.costo_unitario | number: '1.2-4' }}</td>
+          </tr>
+        } @empty {
+          <tr><td colspan="7" class="text-center text-muted py-4">Sin lotes por vencer en el periodo.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Stock critico -->
+<div class="card border-0 shadow-sm">
+  <div class="card-header bg-white fw-semibold"><i class="bi bi-box-seam me-1"></i>Productos con stock critico</div>
+  <div class="table-responsive">
+    <table class="table table-hover tabla-compacta mb-0">
+      <thead class="table-light">
+        <tr><th>Codigo</th><th>Producto</th><th>Tipo</th><th class="text-end">Stock</th><th class="text-end">Umbral</th><th>Estado</th></tr>
+      </thead>
+      <tbody>
+        @for (s of stockCritico(); track s.producto_id) {
+          <tr [class.table-danger]="s.agotado">
+            <td>{{ s.codigo }}</td>
+            <td>{{ s.producto }}</td>
+            <td><span class="badge text-bg-light">{{ s.tipo }}</span></td>
+            <td class="text-end fw-semibold">{{ s.stock }}</td>
+            <td class="text-end">{{ s.umbral }}</td>
+            <td>
+              @if (s.agotado) { <span class="badge text-bg-danger">Agotado</span> }
+              @else { <span class="badge text-bg-warning">Critico</span> }
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="text-center text-muted py-4">Sin productos en stock critico.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

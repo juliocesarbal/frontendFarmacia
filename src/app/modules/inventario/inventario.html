@@ -1,0 +1,149 @@
+<h4 class="mb-3">Inventario</h4>
+
+<div class="d-flex gap-2 mb-3" style="max-width: 640px">
+  <select class="form-select" [(ngModel)]="tipo" (change)="filtrar()" style="max-width: 200px">
+    <option value="">Todos los tipos</option>
+    <option value="MEDICAMENTO">Medicamentos</option>
+    <option value="MATERIAL">Materiales</option>
+    <option value="INSUMO">Insumos</option>
+    <option value="ESPECIAL">Especiales</option>
+  </select>
+  <input class="form-control" placeholder="Buscar" [(ngModel)]="buscar" (keyup.enter)="filtrar()" />
+  <button class="btn btn-outline-secondary" (click)="filtrar()"><i class="bi bi-search"></i></button>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover tabla-compacta mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Codigo</th>
+          <th>Producto</th>
+          <th>Tipo</th>
+          <th class="text-end">Stock actual</th>
+          <th class="text-end">Costo ref.</th>
+          <th class="text-end">Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (i of items(); track i.id) {
+          <tr class="cursor-pointer" [class.table-warning]="bajoMinimo(i)" (click)="abrirDetalle(i)">
+            <td>{{ i.codigo_producto }}</td>
+            <td>{{ i.producto_nombre }}</td>
+            <td><span class="badge text-bg-light">{{ i.tipo_producto }}</span></td>
+            <td class="text-end">
+              {{ i.cantidad_actual }}
+              @if (bajoMinimo(i)) { <i class="bi bi-exclamation-triangle-fill text-warning ms-1"></i> }
+            </td>
+            <td class="text-end">{{ i.costo_referencial | number: '1.2-4' }}</td>
+            <td class="text-end">{{ (+i.cantidad_actual * +i.costo_referencial) | number: '1.2-2' }}</td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="text-center text-muted py-4">Sin datos de inventario.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Paginacion -->
+  <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
+    <span class="small text-muted">
+      @if (cargando()) { Cargando… }
+      @else { Mostrando {{ desde() }}–{{ hasta() }} de {{ total() }} }
+    </span>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-sm btn-outline-secondary" (click)="anterior()" [disabled]="page() <= 1 || cargando()">
+        <i class="bi bi-chevron-left"></i> Anterior
+      </button>
+      <span class="small">Pagina {{ page() }} de {{ totalPaginas() }}</span>
+      <button class="btn btn-sm btn-outline-secondary" (click)="siguiente()" [disabled]="page() >= totalPaginas() || cargando()">
+        Siguiente <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal detalle por lotes (HU07) -->
+@if (mostrarDetalle()) {
+  <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,.45)">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header text-white" style="background: linear-gradient(135deg, var(--primary), var(--primary-light))">
+          <h5 class="modal-title">
+            <i class="bi bi-box-seam me-2"></i>{{ seleccionado()?.producto_nombre }}
+          </h5>
+          <button class="btn-close btn-close-white" (click)="cerrarDetalle()"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Resumen del producto -->
+          <div class="row g-2 mb-3">
+            <div class="col-6 col-md-3">
+              <div class="stat-lbl">Codigo</div>
+              <div class="fw-semibold">{{ seleccionado()?.codigo_producto }}</div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-lbl">Tipo</div>
+              <div><span class="badge text-bg-light">{{ seleccionado()?.tipo_producto }}</span></div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-lbl">Stock total</div>
+              <div class="fw-semibold">{{ seleccionado()?.cantidad_actual }}</div>
+            </div>
+            <div class="col-6 col-md-3">
+              <div class="stat-lbl">Costo ref.</div>
+              <div class="fw-semibold">{{ seleccionado()?.costo_referencial | number: '1.2-4' }}</div>
+            </div>
+          </div>
+
+          <h6 class="mb-2"><i class="bi bi-layers me-1"></i>Lotes / capas de costo (PEPS-FIFO)</h6>
+
+          @if (cargandoLotes()) {
+            <div class="text-center text-muted py-4">Cargando lotes…</div>
+          } @else {
+            <div class="table-responsive">
+              <table class="table table-sm table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Lote</th>
+                    <th>Ingreso</th>
+                    <th>Documento</th>
+                    <th>Vencimiento</th>
+                    <th class="text-end">Disp. / Inicial</th>
+                    <th class="text-end">Costo compra</th>
+                    <th class="text-end">Valor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (l of lotes(); track l.id) {
+                    <tr [class.table-danger]="vencido(l)">
+                      <td>{{ l.numero_lote || ('#' + l.id) }}</td>
+                      <td>{{ l.fecha_ingreso }}</td>
+                      <td>{{ l.documento || '—' }}</td>
+                      <td>
+                        @if (l.fecha_vencimiento) {
+                          {{ l.fecha_vencimiento }}
+                          @if (vencido(l)) { <span class="badge text-bg-danger ms-1">Vencido</span> }
+                        } @else { — }
+                      </td>
+                      <td class="text-end">{{ l.cantidad_disponible }} / {{ l.cantidad_inicial }}</td>
+                      <td class="text-end">{{ l.costo_unitario | number: '1.2-4' }}</td>
+                      <td class="text-end">{{ valorLote(l) | number: '1.2-2' }}</td>
+                    </tr>
+                  } @empty {
+                    <tr><td colspan="7" class="text-center text-muted py-4">Sin lotes activos para este producto.</td></tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <div class="small text-muted">
+              <i class="bi bi-info-circle me-1"></i>Las salidas (ventas, bajas, ajustes-) consumen primero el lote mas antiguo (PEPS/FIFO).
+            </div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cerrarDetalle()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

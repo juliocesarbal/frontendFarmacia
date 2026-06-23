@@ -1,0 +1,438 @@
+/* Login ceremonial HEV-UAGRM (guindo + oro). Estilos scoped al componente. */
+.hev-login {
+  --m900: #350b0e;
+  --m700: #5f1517;
+  --m600: #771c1c;
+  --gold: #cba14a;
+  --gold2: #e6c87f;
+  --goldd: #9c6a2c;
+  --cream: #faf6f0;
+  --ink: #2b1416;
+  --ink2: #8a6f6b;
+  --line2: #e2d4c6;
+  --eo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  background: radial-gradient(circle at 30% 50%, #4a1011, #350b0e 70%);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.hev-card {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Panel izquierdo ── */
+.hev-left {
+  position: relative;
+  flex: 0 0 44%;
+  max-width: 620px;
+  min-width: 420px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, #7a1d1d 0%, #4a1011 58%, #330a0d 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 56px 48px;
+  color: #fff;
+}
+/* patron de puntos oro sutil */
+.hev-left::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(230, 200, 127, 0.07) 1px, transparent 1.4px);
+  background-size: 24px 24px;
+  opacity: 0.8;
+  pointer-events: none;
+  z-index: 0;
+}
+/* vinieta para profundidad en los bordes */
+.hev-left::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 75% 65% at 50% 38%, transparent 55%, rgba(28, 6, 8, 0.55) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+/* anillos concentricos detras del sello */
+.hev-bg-rings {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  width: 760px;
+  height: 760px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: repeating-radial-gradient(
+    circle,
+    transparent 0 58px,
+    rgba(230, 200, 127, 0.05) 58px 59px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+/* glow superior calido */
+.hev-bg-glow {
+  position: absolute;
+  top: -160px;
+  left: 50%;
+  width: 520px;
+  height: 420px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(230, 200, 127, 0.16), rgba(230, 200, 127, 0) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+/* marco redondeado sutil (reemplaza los rectangulos duros) */
+.hev-frame {
+  position: absolute;
+  inset: 20px;
+  border: 1px solid rgba(230, 200, 127, 0.16);
+  border-radius: 22px;
+  pointer-events: none;
+  z-index: 1;
+}
+.hev-left-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.hev-eyebrow-gold {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold2);
+  text-align: center;
+  animation: hevFadeUp 0.7s var(--eo) both;
+  animation-delay: 0.1s;
+}
+.hev-seal-wrap {
+  position: relative;
+  width: 272px;
+  height: 272px;
+  margin: 34px 0;
+  animation: hevFadeUp 0.85s var(--eo) both;
+  animation-delay: 0.2s;
+}
+.hev-seal-ring {
+  position: absolute;
+  inset: -26px;
+  border: 1.5px dashed rgba(230, 200, 127, 0.42);
+  border-radius: 50%;
+  animation: hevRing 38s linear infinite;
+}
+.hev-seal-ring2 {
+  position: absolute;
+  inset: -46px;
+  border: 1px dashed rgba(230, 200, 127, 0.2);
+  border-radius: 50%;
+  animation: hevRing 60s linear infinite reverse;
+}
+.hev-seal-halo {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(230, 200, 127, 0.34), rgba(230, 200, 127, 0) 72%);
+  animation: hevHalo 7s ease-in-out infinite;
+}
+.hev-seal {
+  position: relative;
+  width: 272px;
+  height: 272px;
+  border-radius: 50%;
+  box-shadow: 0 24px 52px -12px rgba(0, 0, 0, 0.62);
+  animation: hevFloat 7s ease-in-out infinite;
+}
+.hev-divider {
+  width: 54px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 4px 0 18px;
+  animation: hevFadeIn 1s ease both;
+  animation-delay: 0.5s;
+}
+.hev-left-title {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-align: center;
+  line-height: 1.2;
+  animation: hevFadeUp 0.8s var(--eo) both;
+  animation-delay: 0.4s;
+}
+.hev-left-loc {
+  margin-top: 14px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(250, 246, 240, 0.62);
+  text-align: center;
+  animation: hevFadeUp 0.8s var(--eo) both;
+  animation-delay: 0.5s;
+}
+
+/* ── Panel derecho ── */
+.hev-right {
+  position: relative;
+  flex: 1;
+  background: var(--cream);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 56px;
+}
+.hev-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #9c6a2c, var(--gold), #e6c87f, var(--gold), #9c6a2c);
+}
+.hev-form {
+  width: 100%;
+  max-width: 380px;
+}
+.hev-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--goldd);
+  animation: hevFadeUp 0.7s var(--eo) both;
+  animation-delay: 0.3s;
+}
+.hev-title {
+  margin: 10px 0 0;
+  font-size: 29px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  animation: hevFadeUp 0.7s var(--eo) both;
+  animation-delay: 0.36s;
+}
+.hev-sub {
+  margin: 8px 0 32px;
+  font-size: 14px;
+  color: var(--ink2);
+  animation: hevFadeUp 0.7s var(--eo) both;
+  animation-delay: 0.42s;
+}
+.hev-field {
+  margin-bottom: 18px;
+  animation: hevFadeUp 0.7s var(--eo) both;
+  animation-delay: 0.48s;
+}
+.hev-field + .hev-field {
+  animation-delay: 0.54s;
+}
+.hev-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink2);
+  margin-bottom: 9px;
+}
+.hev-input-wrap {
+  position: relative;
+}
+.hev-input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #b89a6a;
+}
+.hev-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 16px 0 44px;
+  font-size: 15px;
+  color: var(--ink);
+  background: #fff;
+  border: 1.5px solid var(--line2);
+  border-radius: 11px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.hev-input-pw {
+  padding-right: 50px;
+}
+.hev-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px rgba(203, 161, 74, 0.18);
+  background: #fffdf8;
+}
+.hev-eye {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 9px;
+  cursor: pointer;
+  color: #a98e62;
+  transition: background 0.15s, color 0.15s;
+}
+.hev-eye:hover {
+  background: rgba(203, 161, 74, 0.14);
+  color: var(--goldd);
+}
+.hev-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 26px;
+  animation: hevFadeUp 0.7s var(--eo) both;
+  animation-delay: 0.6s;
+}
+.hev-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink2);
+  cursor: pointer;
+}
+.hev-check input {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--m600);
+  cursor: pointer;
+}
+.hev-forgot {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--goldd);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.hev-forgot:hover {
+  color: var(--m600);
+}
+.hev-submit {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 54px;
+  border: 1.5px solid var(--gold);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #771c1c, #5a1315);
+  color: var(--gold2);
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 12px 26px -10px rgba(90, 19, 21, 0.6);
+  transition: transform 0.18s var(--eo), box-shadow 0.18s, background 0.18s;
+  animation: hevFadeUp 0.7s var(--eo) both;
+  animation-delay: 0.66s;
+}
+.hev-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: linear-gradient(180deg, #8a2322, #671718);
+  box-shadow: 0 18px 34px -10px rgba(90, 19, 21, 0.7);
+}
+.hev-submit:disabled {
+  cursor: default;
+  opacity: 0.92;
+}
+.hev-sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(230, 200, 127, 0.35), transparent);
+  transform: translateX(-130%);
+  animation: hevSweep 5s ease-in-out infinite;
+  animation-delay: 2s;
+}
+.hev-loading {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.hev-spinner {
+  width: 17px;
+  height: 17px;
+  border: 2.5px solid rgba(230, 200, 127, 0.35);
+  border-top-color: var(--gold2);
+  border-radius: 50%;
+  animation: hevSpin 0.7s linear infinite;
+}
+.hev-submit-text {
+  position: relative;
+}
+.hev-secure {
+  margin-top: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #a8978c;
+  animation: hevFadeIn 1s ease both;
+  animation-delay: 0.9s;
+}
+
+/* ── Animaciones ── */
+@keyframes hevFadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes hevFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes hevFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+@keyframes hevHalo {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.06); }
+}
+@keyframes hevRing {
+  to { transform: rotate(360deg); }
+}
+@keyframes hevSweep {
+  0% { transform: translateX(-130%); }
+  60%, 100% { transform: translateX(230%); }
+}
+@keyframes hevSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 860px) {
+  .hev-left {
+    display: none;
+  }
+  .hev-right {
+    padding: 44px 28px;
+  }
+}

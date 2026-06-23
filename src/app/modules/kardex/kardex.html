@@ -1,0 +1,81 @@
+<h4 class="mb-3">Kardex valorado</h4>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body">
+    <div class="row g-2 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label">Producto</label>
+        <select class="form-select" [(ngModel)]="productoId">
+          <option [value]="0">Seleccione...</option>
+          @for (p of productos(); track p.id) {
+            <option [value]="p.id">{{ p.codigo_producto }} - {{ p.nombre }}</option>
+          }
+        </select>
+      </div>
+      <div class="col-md-3"><label class="form-label">Desde</label><input type="date" class="form-control" [(ngModel)]="desde" /></div>
+      <div class="col-md-3"><label class="form-label">Hasta</label><input type="date" class="form-control" [(ngModel)]="hasta" /></div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" (click)="consultar()"><i class="bi bi-search"></i> Consultar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (kardex(); as k) {
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <div>
+      <strong>{{ k.producto.codigo }} - {{ k.producto.nombre }}</strong>
+      <span class="text-muted ms-2">({{ k.desde }} a {{ k.hasta }})</span>
+    </div>
+    <div>
+      <button class="btn btn-sm btn-outline-success me-1" (click)="exportar('excel')"><i class="bi bi-file-earmark-excel"></i> Excel</button>
+      <button class="btn btn-sm btn-outline-danger" (click)="exportar('pdf')"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
+    </div>
+  </div>
+
+  @if (k.verificacion_capas) {
+    <div class="alert py-2" [class.alert-success]="k.verificacion_capas.coincide" [class.alert-warning]="!k.verificacion_capas.coincide">
+      Saldo final Kardex: {{ k.saldo_final_cantidad }} u. / Bs. {{ k.saldo_final_valor }}.
+      Suma de capas: {{ k.verificacion_capas.cantidad }} u.
+      {{ k.verificacion_capas.coincide ? '✓ coincide' : '⚠ revisar' }}
+    </div>
+  }
+
+  <div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-sm table-bordered tabla-compacta mb-0">
+        <thead class="table-light text-center">
+          <tr>
+            <th>Fecha</th><th>Concepto</th><th>Doc.</th><th class="text-end">C.Unit</th>
+            <th class="text-end">Ent.Cant</th><th class="text-end">Ent.Valor</th>
+            <th class="text-end">Sal.Cant</th><th class="text-end">Sal.Valor</th>
+            <th class="text-end">Saldo Cant</th><th class="text-end">Saldo Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="table-secondary">
+            <td colspan="8" class="fw-semibold">SALDO INICIAL</td>
+            <td class="text-end fw-semibold">{{ k.saldo_inicial_cantidad }}</td>
+            <td class="text-end fw-semibold">{{ k.saldo_inicial_valor }}</td>
+          </tr>
+          @for (f of k.filas; track $index) {
+            <tr>
+              <td>{{ f.fecha }}</td>
+              <td>{{ f.concepto }}</td>
+              <td>{{ f.documento }}</td>
+              <td class="text-end">{{ f.costo_unitario | number: '1.2-4' }}</td>
+              <td class="text-end">{{ +f.entrada_cantidad || '' }}</td>
+              <td class="text-end">{{ +f.entrada_valor ? (f.entrada_valor | number: '1.2-2') : '' }}</td>
+              <td class="text-end">{{ +f.salida_cantidad || '' }}</td>
+              <td class="text-end">{{ +f.salida_valor ? (f.salida_valor | number: '1.2-2') : '' }}</td>
+              <td class="text-end">{{ f.saldo_cantidad }}</td>
+              <td class="text-end">{{ f.saldo_valor | number: '1.2-2' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="10" class="text-center text-muted py-3">Sin movimientos en el periodo.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

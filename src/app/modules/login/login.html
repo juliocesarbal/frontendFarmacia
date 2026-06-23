@@ -1,0 +1,105 @@
+<div class="hev-login">
+  <div class="hev-card">
+
+    <!-- ── PANEL CEREMONIAL IZQUIERDO ── -->
+    <div class="hev-left">
+      <!-- capas decorativas de fondo -->
+      <span class="hev-bg-rings"></span>
+      <span class="hev-bg-glow"></span>
+      <span class="hev-frame"></span>
+
+      <div class="hev-left-content">
+        <div class="hev-eyebrow-gold">Hospital Escuela de Veterinaria</div>
+
+        <div class="hev-seal-wrap">
+          <span class="hev-seal-ring"></span>
+          <span class="hev-seal-ring2"></span>
+          <span class="hev-seal-halo"></span>
+          <img src="logo-seal.png" alt="Sello HEV" class="hev-seal" />
+        </div>
+
+        <div class="hev-divider"></div>
+        <div class="hev-left-title">Sistema de Gestion<br />Farmaceutica</div>
+        <div class="hev-left-loc">Santa Cruz de la Sierra · Bolivia</div>
+      </div>
+    </div>
+
+    <!-- ── PANEL FORMULARIO DERECHO ── -->
+    <div class="hev-right">
+      <span class="hev-topbar"></span>
+
+      <form class="hev-form" (ngSubmit)="entrar()">
+        <div class="hev-eyebrow">Acceso al sistema</div>
+        <h2 class="hev-title">Inicio de sesion</h2>
+        <p class="hev-sub">Ingresa tus credenciales institucionales.</p>
+
+        <!-- usuario -->
+        <div class="hev-field">
+          <label class="hev-label">Usuario</label>
+          <div class="hev-input-wrap">
+            <svg class="hev-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <input
+              type="text"
+              class="hev-input"
+              name="username"
+              [(ngModel)]="username"
+              required
+              autocomplete="username"
+              placeholder="usuario@hev.uagrm.edu.bo"
+            />
+          </div>
+        </div>
+
+        <!-- contrasena -->
+        <div class="hev-field">
+          <label class="hev-label">Contrasena</label>
+          <div class="hev-input-wrap">
+            <svg class="hev-input-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input
+              [type]="verPassword() ? 'text' : 'password'"
+              class="hev-input hev-input-pw"
+              name="password"
+              [(ngModel)]="password"
+              required
+              autocomplete="current-password"
+              placeholder="••••••••"
+            />
+            <button type="button" class="hev-eye" aria-label="Mostrar contrasena" (click)="verPassword.set(!verPassword())">
+              @if (verPassword()) {
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+              } @else {
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              }
+            </button>
+          </div>
+        </div>
+
+        <!-- recordar + olvide -->
+        <div class="hev-row">
+          <label class="hev-check"><input type="checkbox" name="recordar" [(ngModel)]="recordar" />Recordarme</label>
+          <a href="javascript:void(0)" class="hev-forgot">¿Olvidaste tu contrasena?</a>
+        </div>
+
+        @if (error()) {
+          <div class="alert alert-danger py-2 mb-3">{{ error() }}</div>
+        }
+
+        <!-- boton -->
+        <button type="submit" class="hev-submit" [disabled]="cargando()">
+          <span class="hev-sweep"></span>
+          @if (cargando()) {
+            <span class="hev-loading"><span class="hev-spinner"></span>Ingresando…</span>
+          } @else {
+            <span class="hev-submit-text">Iniciar sesion</span>
+          }
+        </button>
+
+        <div class="hev-secure">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Conexion segura · Acceso restringido al personal autorizado
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>

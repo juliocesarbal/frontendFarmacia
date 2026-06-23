@@ -1,0 +1,71 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Proveedores</h4>
+  <button class="btn btn-primary btn-sm" (click)="abrirNuevo()">
+    <i class="bi bi-plus-lg"></i> Nuevo proveedor
+  </button>
+</div>
+
+<div class="input-group mb-3" style="max-width: 420px">
+  <input class="form-control" placeholder="Buscar por nombre o NIT" [(ngModel)]="buscar" (keyup.enter)="cargar()" />
+  <button class="btn btn-outline-secondary" (click)="cargar()"><i class="bi bi-search"></i></button>
+</div>
+
+<div class="card border-0 shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover tabla-compacta mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Nombre</th>
+          <th>NIT</th>
+          <th>Telefono</th>
+          <th>Correo</th>
+          <th>Estado</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (p of proveedores(); track p.id) {
+          <tr>
+            <td>{{ p.nombre }}</td>
+            <td>{{ p.nit }}</td>
+            <td>{{ p.telefono }}</td>
+            <td>{{ p.correo }}</td>
+            <td><span class="badge badge-estado" [class.text-bg-success]="p.estado === 'ACTIVO'" [class.text-bg-secondary]="p.estado !== 'ACTIVO'">{{ p.estado }}</span></td>
+            <td class="text-end">
+              <button class="btn btn-sm btn-outline-primary me-1" (click)="editar(p)"><i class="bi bi-pencil"></i></button>
+              <button class="btn btn-sm btn-outline-danger" (click)="desactivar(p)"><i class="bi bi-x-circle"></i></button>
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="6" class="text-center text-muted py-4">Sin proveedores.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+@if (mostrarForm()) {
+  <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,.4)">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">{{ modelo.id ? 'Editar' : 'Nuevo' }} proveedor</h5>
+          <button class="btn-close" (click)="mostrarForm.set(false)"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-2">
+            <div class="col-12"><label class="form-label">Nombre</label><input class="form-control" [(ngModel)]="modelo.nombre" /></div>
+            <div class="col-6"><label class="form-label">NIT</label><input class="form-control" [(ngModel)]="modelo.nit" /></div>
+            <div class="col-6"><label class="form-label">Telefono</label><input class="form-control" [(ngModel)]="modelo.telefono" /></div>
+            <div class="col-6"><label class="form-label">Correo</label><input class="form-control" [(ngModel)]="modelo.correo" /></div>
+            <div class="col-6"><label class="form-label">Direccion</label><input class="form-control" [(ngModel)]="modelo.direccion" /></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="mostrarForm.set(false)">Cancelar</button>
+          <button class="btn btn-primary" (click)="guardar()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

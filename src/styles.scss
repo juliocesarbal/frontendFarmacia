@@ -1,0 +1,208 @@
+/* Estilos globales - Sistema de Gestion Farmaceutica HEV-UAGRM */
+/* Identidad institucional: guindo UAGRM (#731A1B) + azul (#004F91) */
+:root {
+  --primary: #731a1b;        /* guindo UAGRM: navbar, botones primarios */
+  --primary-light: #8b2222;
+  --primary-dark: #5a1314;
+  --accent: #004f91;         /* azul: iconos, links, activos, foco */
+  --accent-light: #0a63ad;
+  --accent-soft: #e3edf6;    /* azul claro: pill activo del sidebar */
+  --cream: #f4f6f8;          /* fondo de pagina */
+  --success: #16a34a;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --info: #0ea5e9;
+  --surface: #f3f4f6;
+  --border: #e2e8f0;
+  --ink: #1f2937;
+  --muted: #64748b;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
+  background-color: var(--surface);
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+
+h1, h2, h3, h4, h5, .font-serif {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  letter-spacing: 0.2px;
+}
+
+/* Botones / acentos con color de marca */
+.btn-primary {
+  --bs-btn-bg: var(--primary);
+  --bs-btn-border-color: var(--primary);
+  --bs-btn-color: #fff;
+  --bs-btn-hover-bg: var(--primary-light);
+  --bs-btn-hover-border-color: var(--primary-light);
+  --bs-btn-active-bg: var(--primary-dark);
+  --bs-btn-active-border-color: var(--primary-dark);
+  --bs-btn-disabled-bg: var(--primary-light);
+  --bs-btn-disabled-border-color: var(--primary-light);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--primary);
+  --bs-btn-border-color: var(--accent);
+  --bs-btn-hover-bg: var(--accent);
+  --bs-btn-hover-border-color: var(--accent);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: var(--accent);
+}
+
+.btn-accent {
+  --bs-btn-bg: var(--accent);
+  --bs-btn-border-color: var(--accent);
+  --bs-btn-color: #fff;
+  --bs-btn-hover-bg: var(--accent-light);
+  --bs-btn-hover-border-color: var(--accent-light);
+  --bs-btn-hover-color: #fff;
+}
+
+.text-primary {
+  color: var(--primary) !important;
+}
+.text-accent {
+  color: var(--accent) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary) !important;
+}
+
+a {
+  color: var(--accent);
+}
+a:hover {
+  color: var(--accent-light);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0.18rem rgba(0, 79, 145, 0.18);
+}
+
+.card {
+  border-radius: 14px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+/* Scrollbars invisibles (scroll sigue funcionando) */
+* {
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* IE / Edge antiguo */
+}
+*::-webkit-scrollbar {        /* Chrome / Safari / Edge */
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+.badge-estado {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+
+.tabla-compacta th,
+.tabla-compacta td {
+  vertical-align: middle;
+}
+.tabla-compacta thead th {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+}
+
+/* Tarjetas de estadistica reutilizables */
+.stat-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.9rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.stat-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+}
+.stat-num {
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.stat-lbl {
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin-top: 0.1rem;
+}
+
+/* Encabezado de tarjeta con color de marca */
+.card-title-brand {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Chip de icono caramelo (accesos rapidos, etc.) */
+.icon-chip {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Grafico de barras simple (analitica K-means) */
+.bar-track {
+  width: 100%;
+  height: 14px;
+  background: #eef0f2;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 8px;
+  transition: width 0.4s ease;
+}
+.legend-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* Tarjetas de acceso rapido (dashboard) */
+.acceso-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.acceso-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.6rem 1.4rem rgba(15, 23, 42, 0.12) !important;
+}
+.acceso-card:hover .bi-arrow-right {
+  color: var(--accent) !important;
+}

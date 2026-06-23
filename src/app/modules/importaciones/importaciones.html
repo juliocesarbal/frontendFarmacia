@@ -1,0 +1,91 @@
+<h4 class="mb-3 card-title-brand"><i class="bi bi-file-earmark-arrow-up me-2"></i>Importar datos historicos desde Excel</h4>
+
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-body">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">Tipo de importacion</label>
+        <select class="form-select" [(ngModel)]="tipo">
+          <option value="inventario-inicial">Inventario inicial</option>
+          <option value="compras">Compras historicas</option>
+          <option value="ventas">Ventas historicas</option>
+        </select>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label fw-semibold">Archivo Excel (.xlsx)</label>
+        <input type="file" class="form-control" accept=".xlsx,.xls" (change)="onArchivo($event)" />
+      </div>
+      <div class="col-md-3">
+        <button class="btn btn-primary w-100" (click)="subir()" [disabled]="cargando()">
+          <i class="bi bi-upload"></i> {{ cargando() ? 'Procesando...' : 'Cargar y validar' }}
+        </button>
+      </div>
+    </div>
+    <div class="alert alert-light border mt-3 mb-0 small">
+      <i class="bi bi-info-circle me-1"></i>
+      El sistema valida cada fila antes de confirmar. Solo las filas validas crean capas de costo y movimientos.
+      Columnas inventario inicial: <code>codigo_producto, cantidad_inicial, costo_unitario, fecha_saldo</code>.
+    </div>
+  </div>
+</div>
+
+@if (error()) { <div class="alert alert-danger">{{ error() }}</div> }
+
+@if (confirmado()) {
+  <div class="alert alert-success">
+    <i class="bi bi-check2-circle me-1"></i> Importacion confirmada. Las filas validas se registraron en el inventario.
+  </div>
+}
+
+@if (resultado(); as r) {
+  <div class="row g-3 mb-3">
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#e8f0f9;color:#004F91"><i class="bi bi-list-ol"></i></div>
+        <div><div class="stat-num">{{ r.total_registros }}</div><div class="stat-lbl">Total filas</div></div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#dcfce7;color:#166534"><i class="bi bi-check-circle"></i></div>
+        <div><div class="stat-num">{{ r.registros_validos }}</div><div class="stat-lbl">Validas</div></div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#fee2e2;color:#dc2626"><i class="bi bi-exclamation-triangle"></i></div>
+        <div><div class="stat-num">{{ r.registros_observados }}</div><div class="stat-lbl">Con error</div></div>
+      </div>
+    </div>
+    <div class="col-md-3 d-flex align-items-center">
+      <button class="btn btn-success w-100" (click)="confirmar()" [disabled]="filasValidas === 0 || confirmado() || r.estado === 'CONFIRMADO'">
+        <i class="bi bi-check2-all"></i> Confirmar importacion
+      </button>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-header bg-white"><strong>Vista previa</strong> — {{ r.nombre_archivo }}</div>
+    <div class="table-responsive">
+      <table class="table table-sm tabla-compacta mb-0">
+        <thead class="table-light">
+          <tr><th>Fila</th><th>Estado</th><th>Datos</th><th>Error</th></tr>
+        </thead>
+        <tbody>
+          @for (d of r.detalles || []; track d.id) {
+            <tr [class.table-danger]="d.estado_fila === 'ERROR'">
+              <td>{{ d.numero_fila }}</td>
+              <td>
+                <span class="badge" [class.text-bg-success]="d.estado_fila === 'VALIDO'" [class.text-bg-danger]="d.estado_fila === 'ERROR'">{{ d.estado_fila }}</span>
+              </td>
+              <td class="small">{{ d.datos_originales | json }}</td>
+              <td class="small text-danger">{{ d.mensaje_error }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="4" class="text-center text-muted py-3">Sin filas.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

@@ -1,0 +1,157 @@
+.topbar {
+  background: var(--primary, #731a1b);
+  color: #fff;
+  padding: 0 1.25rem;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.brand-logo {
+  height: 40px;
+  width: 40px;
+  border-radius: 11px;
+  object-fit: cover;
+  background: #fff;
+  padding: 3px;
+}
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.brand-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+.brand-sub {
+  font-size: 0.66rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Pill de usuario */
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem 0.25rem 0.3rem;
+}
+.user-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent, #004f91);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+.user-info {
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+}
+.user-info .name {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.user-info .role {
+  font-size: 0.66rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.shell-body {
+  min-height: calc(100vh - 62px);
+}
+
+/* Sidebar claro */
+.sidebar {
+  width: 248px;
+  background-color: #fff;
+  border-right: 1px solid var(--border, #e2e8f0);
+  flex-shrink: 0;
+}
+
+.nav-heading {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted, #64748b);
+  font-weight: 700;
+  padding: 0.85rem 0.85rem 0.5rem;
+}
+
+.grupo-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  font-weight: 700;
+  padding: 0.7rem 0.85rem 0.25rem;
+}
+
+.sidebar .nav-link {
+  border-radius: 0.6rem;
+  margin-bottom: 0.12rem;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.9rem;
+  color: var(--ink, #1f2937);
+  position: relative;
+}
+.sidebar .nav-link i {
+  color: var(--muted, #64748b);
+  font-size: 1.05rem;
+  transition: color 0.15s;
+}
+
+.sidebar .nav-link:hover {
+  background-color: var(--cream, #f4f6f8);
+}
+.sidebar .nav-link:hover i {
+  color: var(--accent, #004f91);
+}
+
+.sidebar .nav-link.active {
+  background-color: var(--accent-soft, #e3edf6);
+  color: var(--primary-dark, #5a1314);
+  font-weight: 600;
+}
+.sidebar .nav-link.active i {
+  color: var(--accent, #004f91);
+}
+.sidebar .nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 18%;
+  bottom: 18%;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--accent, #004f91);
+}
+
+.content {
+  max-width: 1500px;
+  background: var(--cream, #f4f6f8);
+}
