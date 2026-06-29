@@ -85,6 +85,7 @@ export class VentasComponent implements OnInit {
     return this.detalles().reduce((s, d) => s + Number(d.cantidad) * Number(d.precio_unitario), 0);
   }
 
+  /** Crea la venta en estado pendiente de pago (NO descuenta stock). */
   guardar(): void {
     if (this.guardando()) return; // evita doble/triple submit
     this.guardando.set(true);
@@ -103,10 +104,35 @@ export class VentasComponent implements OnInit {
     });
   }
 
-  confirmar(v: Venta): void {
-    this.api.action<Venta>('ventas', v.id, 'confirmar').subscribe({
+  // ----- Flujo de caja facultativa -----
+  /** 1) Registra el comprobante de pago de la caja (queda PENDIENTE de verificacion). */
+  registrarComprobante(v: Venta): void {
+    const numero = prompt('Numero de comprobante de caja:', '') ?? '';
+    const monto = prompt('Monto pagado (Bs.):', v.total_venta) ?? v.total_venta;
+    this.api
+      .action<Venta>('ventas', v.id, 'registrar-comprobante', {
+        numero_comprobante: numero,
+        monto_pagado: monto,
+      })
+      .subscribe({
+        next: () => this.cargar(),
+        error: (e) => alert(e?.error?.detail || 'No se pudo registrar el comprobante.'),
+      });
+  }
+
+  /** 2) Verifica el pago -> venta PAGADA. */
+  verificarPago(v: Venta): void {
+    this.api.action<Venta>('ventas', v.id, 'verificar-pago').subscribe({
       next: () => this.cargar(),
-      error: (e) => alert(e?.error?.detail || 'No se pudo confirmar.'),
+      error: (e) => alert(e?.error?.detail || 'No se pudo verificar el pago.'),
+    });
+  }
+
+  /** 3) Entrega -> descuenta inventario por FIFO (solo si esta PAGADA). */
+  entregar(v: Venta): void {
+    this.api.action<Venta>('ventas', v.id, 'entregar').subscribe({
+      next: () => this.cargar(),
+      error: (e) => alert(e?.error?.detail || 'No se pudo entregar (revise pago y stock).'),
     });
   }
 
@@ -115,6 +141,17 @@ export class VentasComponent implements OnInit {
     this.api.action<Venta>('ventas', v.id, 'anular', { motivo }).subscribe({
       next: () => this.cargar(),
       error: (e) => alert(e?.error?.detail || 'No se pudo anular.'),
+    });
+  }
+
+  descargarBoleta(v: Venta): void {
+    this.api.download(`ventas/${v.id}/boleta/`, { formato: 'pdf' }).subscribe((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `boleta_venta_${v.id}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
     });
   }
 }

@@ -82,7 +82,6 @@ export interface DetalleCompra {
   cantidad: string;
   costo_unitario: string;
   costo_total?: string;
-  numero_lote?: string;
   fecha_vencimiento?: string;
   observacion?: string;
 }
@@ -110,15 +109,28 @@ export interface DetalleVenta {
   costo_total_salida?: string;
 }
 
+export interface ComprobantePago {
+  id: number;
+  venta: number;
+  numero_comprobante: string;
+  monto_pagado: string;
+  fecha_pago: string;
+  estado_verificacion: string; // PENDIENTE | VERIFICADO | RECHAZADO
+  observacion: string;
+}
+
 export interface Venta {
   id: number;
   numero_boleta: string;
   fecha_venta: string;
   tipo_venta: string;
-  estado: string;
+  estado: string; // ACTIVA | ANULADA
+  estado_pago: string; // PENDIENTE_PAGO | PAGADA | RECHAZADA
+  estado_entrega: string; // PENDIENTE_ENTREGA | ENTREGADA | NO_ENTREGADA
   total_venta: string;
   observacion: string;
   detalles: DetalleVenta[];
+  comprobantes?: ComprobantePago[];
 }
 
 export interface Lote {
@@ -129,9 +141,6 @@ export interface Lote {
   fecha_ingreso: string;
   origen: string;
   estado: string;
-  numero_lote: string;
-  fecha_vencimiento: string | null;
-  documento: string;
 }
 
 export interface InventarioItem {
@@ -182,7 +191,6 @@ export interface DetalleBaja {
   id?: number;
   producto: number;
   producto_nombre?: string;
-  capa?: number | null;
   cantidad: string;
   costo_total_baja?: string;
   observacion?: string;
@@ -211,7 +219,6 @@ export interface DetalleAjuste {
 
 export interface Ajuste {
   id: number;
-  numero_ajuste: string;
   fecha_ajuste: string;
   tipo_ajuste: string;
   estado: string;

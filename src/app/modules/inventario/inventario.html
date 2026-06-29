@@ -104,10 +104,8 @@
               <table class="table table-sm table-hover align-middle">
                 <thead class="table-light">
                   <tr>
-                    <th>Lote</th>
                     <th>Ingreso</th>
-                    <th>Documento</th>
-                    <th>Vencimiento</th>
+                    <th>Origen</th>
                     <th class="text-end">Disp. / Inicial</th>
                     <th class="text-end">Costo compra</th>
                     <th class="text-end">Valor</th>
@@ -115,22 +113,15 @@
                 </thead>
                 <tbody>
                   @for (l of lotes(); track l.id) {
-                    <tr [class.table-danger]="vencido(l)">
-                      <td>{{ l.numero_lote || ('#' + l.id) }}</td>
+                    <tr>
                       <td>{{ l.fecha_ingreso }}</td>
-                      <td>{{ l.documento || '—' }}</td>
-                      <td>
-                        @if (l.fecha_vencimiento) {
-                          {{ l.fecha_vencimiento }}
-                          @if (vencido(l)) { <span class="badge text-bg-danger ms-1">Vencido</span> }
-                        } @else { — }
-                      </td>
+                      <td><span class="badge text-bg-light">{{ l.origen }}</span></td>
                       <td class="text-end">{{ l.cantidad_disponible }} / {{ l.cantidad_inicial }}</td>
                       <td class="text-end">{{ l.costo_unitario | number: '1.2-4' }}</td>
                       <td class="text-end">{{ valorLote(l) | number: '1.2-2' }}</td>
                     </tr>
                   } @empty {
-                    <tr><td colspan="7" class="text-center text-muted py-4">Sin lotes activos para este producto.</td></tr>
+                    <tr><td colspan="5" class="text-center text-muted py-4">Sin lotes activos para este producto.</td></tr>
                   }
                 </tbody>
               </table>

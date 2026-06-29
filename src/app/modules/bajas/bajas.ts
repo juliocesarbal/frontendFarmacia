@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
-import { Baja, DetalleBaja, Lote, MotivoBaja, Producto } from '../../core/models';
+import { Baja, DetalleBaja, MotivoBaja, Producto } from '../../core/models';
 
 @Component({
   selector: 'app-bajas',
@@ -14,7 +14,6 @@ export class BajasComponent implements OnInit {
   bajas = signal<Baja[]>([]);
   motivos = signal<MotivoBaja[]>([]);
   productos = signal<Producto[]>([]);
-  lotesPorProducto = signal<Record<number, Lote[]>>({});
   mostrarForm = signal(false);
   guardando = signal(false);
   error = signal('');
@@ -73,22 +72,7 @@ export class BajasComponent implements OnInit {
   }
 
   lineaVacia(): DetalleBaja {
-    return { producto: 0, cantidad: '0', capa: null };
-  }
-
-  /** Lotes (capas) cargados para un producto. */
-  lotesDe(productoId: number): Lote[] {
-    return this.lotesPorProducto()[productoId] || [];
-  }
-
-  /** Al cambiar el producto de una linea: resetea lote y carga sus lotes. */
-  onProducto(d: DetalleBaja): void {
-    d.capa = null;
-    const id = Number(d.producto);
-    if (!id || this.lotesPorProducto()[id]) return;
-    this.api.raw<Lote[]>(`productos/${id}/capas/`).subscribe((r) => {
-      this.lotesPorProducto.update((m) => ({ ...m, [id]: r }));
-    });
+    return { producto: 0, cantidad: '0' };
   }
 
   agregarLinea(): void {
@@ -129,6 +113,17 @@ export class BajasComponent implements OnInit {
     this.api.action<Baja>('bajas', b.id, 'confirmar').subscribe({
       next: () => this.cargar(),
       error: (e) => alert(e?.error?.detail || 'No se pudo confirmar.'),
+    });
+  }
+
+  descargarBoleta(b: Baja): void {
+    this.api.download(`bajas/${b.id}/boleta/`, { formato: 'pdf' }).subscribe((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `boleta_baja_${b.id}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
     });
   }
 }

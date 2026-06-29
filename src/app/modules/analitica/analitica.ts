@@ -21,6 +21,10 @@ interface Cluster {
 interface Ejecucion {
   id: number;
   numero_clusters: number;
+  periodo_inicio?: string;
+  periodo_fin?: string;
+  fecha_ejecucion?: string;
+  variables_usadas?: string[];
   clusters: Cluster[];
 }
 
@@ -34,7 +38,10 @@ export class AnaliticaComponent {
   k = 4;
   resultado = signal<Ejecucion | null>(null);
   cargando = signal(false);
+  exportando = signal(false);
   error = signal('');
+  /** Texto de busqueda por cluster (numero_cluster -> query). */
+  filtros = signal<Record<number, string>>({});
 
   constructor(private api: ApiService) {}
 
@@ -51,9 +58,50 @@ export class AnaliticaComponent {
     return Math.max(1, ...c.map((x) => x.productos.length));
   }
 
+  totalProductos(): number {
+    return (this.resultado()?.clusters ?? []).reduce((s, c) => s + c.productos.length, 0);
+  }
+
+  // ----- Busqueda por cluster -----
+  buscar(c: Cluster): string {
+    return this.filtros()[c.numero_cluster] ?? '';
+  }
+
+  setBuscar(c: Cluster, q: string): void {
+    this.filtros.update((f) => ({ ...f, [c.numero_cluster]: q }));
+  }
+
+  productosFiltrados(c: Cluster): ProductoCluster[] {
+    const q = this.buscar(c).toLowerCase().trim();
+    if (!q) return c.productos;
+    return c.productos.filter(
+      (p) => p.codigo.toLowerCase().includes(q) || p.nombre.toLowerCase().includes(q),
+    );
+  }
+
+  // ----- Metricas por cluster -----
+  promRotacion(c: Cluster): number {
+    if (!c.productos.length) return 0;
+    return c.productos.reduce((s, p) => s + Number(p.rotacion), 0) / c.productos.length;
+  }
+
+  sumaConsumo(c: Cluster): number {
+    return c.productos.reduce((s, p) => s + Number(p.consumo_total), 0);
+  }
+
+  sumaCosto(c: Cluster): number {
+    return c.productos.reduce((s, p) => s + Number(p.costo_total), 0);
+  }
+
+  porcentaje(c: Cluster): number {
+    const t = this.totalProductos();
+    return t ? (c.productos.length / t) * 100 : 0;
+  }
+
   ejecutar(): void {
     this.cargando.set(true);
     this.error.set('');
+    this.filtros.set({});
     this.api
       .create<Ejecucion>('analitica/kmeans/ejecutar', { k: this.k })
       .pipe(timeout(120000)) // si cuelga >2min, libera el boton en vez de quedar trabado
@@ -69,5 +117,23 @@ export class AnaliticaComponent {
           this.cargando.set(false);
         },
       });
+  }
+
+  exportar(): void {
+    const r = this.resultado();
+    if (!r) return;
+    this.exportando.set(true);
+    this.api.download(`analitica/kmeans/${r.id}/exportar/`).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `segmentacion_kmeans_${r.id}.xlsx`;
+        a.click();
+        URL.revokeObjectURL(url);
+        this.exportando.set(false);
+      },
+      error: () => this.exportando.set(false),
+    });
   }
 }

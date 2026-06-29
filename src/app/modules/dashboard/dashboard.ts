@@ -12,6 +12,26 @@ interface Acceso {
   permiso?: string;
 }
 
+interface StockItem {
+  producto_id: number;
+  codigo: string;
+  producto: string;
+  tipo: string;
+  stock: string;
+  umbral: number;
+  agotado: boolean;
+}
+
+interface VentaItem {
+  id: number;
+  numero_boleta: string;
+  fecha_venta: string;
+  total_venta: string;
+  estado: string;
+  estado_pago: string;
+  estado_entrega: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -20,19 +40,21 @@ interface Acceso {
 })
 export class DashboardComponent implements OnInit {
   productos = signal(0);
-  proveedores = signal(0);
-  ventas = signal(0);
   valorInventario = signal(0);
+  ventasMes = signal(0);
+  stockCriticoTotal = signal(0);
+  stockCritico = signal<StockItem[]>([]);
+  ultimasVentas = signal<VentaItem[]>([]);
   readonly usuario;
 
   private readonly todos: Acceso[] = [
     { ruta: '/productos', titulo: 'Productos', desc: 'Medicamentos, materiales e insumos', icono: 'bi-capsule' },
-    { ruta: '/proveedores', titulo: 'Proveedores', desc: 'Registrar y consultar proveedores', icono: 'bi-truck' },
     { ruta: '/compras', titulo: 'Compras', desc: 'Ingresos y capas de costo', icono: 'bi-cart-plus' },
     { ruta: '/ventas', titulo: 'Ventas', desc: 'Dispensaciones y salidas', icono: 'bi-cash-coin' },
     { ruta: '/inventario', titulo: 'Inventario', desc: 'Existencias por producto', icono: 'bi-box-seam' },
     { ruta: '/kardex', titulo: 'Kardex valorado', desc: 'PEPS/FIFO por producto', icono: 'bi-journal-text', permiso: 'kardex.ver' },
     { ruta: '/reportes', titulo: 'Reportes', desc: 'Compras, ventas, inventario', icono: 'bi-file-earmark-bar-graph', permiso: 'reportes.ver' },
+    { ruta: '/importaciones', titulo: 'Importar Excel', desc: 'Carga de datos historicos', icono: 'bi-file-earmark-arrow-up', permiso: 'importaciones.gestionar' },
     { ruta: '/analitica', titulo: 'Analitica', desc: 'Segmentacion K-means', icono: 'bi-graph-up', permiso: 'analitica.ejecutar' },
   ];
 
@@ -59,10 +81,29 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.api.list('productos', { page: 1 }).subscribe((r) => this.productos.set(r.count));
-    this.api.list('proveedores', { page: 1 }).subscribe((r) => this.proveedores.set(r.count));
-    this.api.list('ventas', { page: 1 }).subscribe((r) => this.ventas.set(r.count));
     this.api
       .raw<{ valor_total: number }>('reportes/inventario/')
       .subscribe((r) => this.valorInventario.set(r.valor_total));
+
+    // Ventas entregadas del mes en curso (Bs)
+    const hoy = new Date();
+    const desde = new Date(hoy.getFullYear(), hoy.getMonth(), 1).toISOString().slice(0, 10);
+    const hasta = hoy.toISOString().slice(0, 10);
+    this.api
+      .raw<{ resumen: { total: number; cantidad: number } }>('reportes/ventas/', { desde, hasta })
+      .subscribe((r) => this.ventasMes.set(r.resumen?.total || 0));
+
+    // Stock critico (resumen + top 6 para el panel)
+    this.api
+      .raw<{ stock_critico: StockItem[]; resumen: { stock_critico: number } }>('reportes/alertas/')
+      .subscribe((r) => {
+        this.stockCritico.set((r.stock_critico || []).slice(0, 6));
+        this.stockCriticoTotal.set(r.resumen?.stock_critico || 0);
+      });
+
+    // Ultimas ventas
+    this.api
+      .list<VentaItem>('ventas', { page: 1, page_size: 6 })
+      .subscribe((r) => this.ultimasVentas.set(r.results));
   }
 }

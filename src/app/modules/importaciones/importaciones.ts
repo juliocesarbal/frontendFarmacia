@@ -12,7 +12,7 @@ import { Importacion } from '../../core/models';
   templateUrl: './importaciones.html',
 })
 export class ImportacionesComponent {
-  tipo = signal<'inventario-inicial' | 'compras' | 'ventas'>('inventario-inicial');
+  tipo = signal<'inventario-inicial' | 'compras' | 'ventas' | 'bajas'>('inventario-inicial');
   archivo: File | null = null;
   resultado = signal<Importacion | null>(null);
   cargando = signal(false);

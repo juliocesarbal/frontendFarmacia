@@ -73,7 +73,7 @@ export class ComprasComponent implements OnInit {
   }
 
   lineaVacia(): DetalleCompra {
-    return { producto: 0, cantidad: '0', costo_unitario: '0', numero_lote: '', fecha_vencimiento: '' };
+    return { producto: 0, cantidad: '0', costo_unitario: '0', fecha_vencimiento: '' };
   }
 
   agregarLinea(): void {

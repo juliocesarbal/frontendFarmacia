@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { Categoria, MotivoBaja, Proveedor } from '../../core/models';
 
-type Tipo = 'compras' | 'ventas' | 'bajas' | 'inventario' | 'trazabilidad';
+type Tipo = 'compras' | 'ventas' | 'bajas' | 'ajustes' | 'inventario' | 'trazabilidad';
 
 @Component({
   selector: 'app-reportes',
@@ -38,6 +38,7 @@ export class ReportesComponent implements OnInit {
     { id: 'compras', label: 'Compras', icono: 'bi-cart-check' },
     { id: 'ventas', label: 'Ventas', icono: 'bi-cash-coin' },
     { id: 'bajas', label: 'Bajas', icono: 'bi-trash3' },
+    { id: 'ajustes', label: 'Ajustes', icono: 'bi-sliders' },
     { id: 'inventario', label: 'Inventario', icono: 'bi-box-seam' },
     { id: 'trazabilidad', label: 'Trazabilidad', icono: 'bi-clock-history' },
   ];
@@ -80,6 +81,9 @@ export class ReportesComponent implements OnInit {
       case 'bajas':
         if (this.estado) p['estado'] = this.estado;
         if (this.motivo) p['motivo'] = this.motivo;
+        break;
+      case 'ajustes':
+        if (this.estado) p['estado'] = this.estado;
         break;
       case 'inventario':
         if (this.tipoProd) p['tipo'] = this.tipoProd;

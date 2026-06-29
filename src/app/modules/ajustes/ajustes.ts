@@ -32,7 +32,7 @@ export class AjustesComponent implements OnInit {
   }
 
   nuevo(): Partial<Ajuste> {
-    return { numero_ajuste: '', tipo_ajuste: 'POSITIVO', motivo: '', observacion: '' };
+    return { tipo_ajuste: 'POSITIVO', motivo: '', observacion: '' };
   }
 
   abrirNuevo(): void {

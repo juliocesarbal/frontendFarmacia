@@ -22,17 +22,28 @@
             <td class="text-end">{{ v.total_venta | number: '1.2-2' }}</td>
             <td>
               <span class="badge badge-estado"
-                [class.text-bg-success]="v.estado === 'CONFIRMADA'"
-                [class.text-bg-warning]="v.estado === 'BORRADOR'"
+                [class.text-bg-success]="v.estado === 'ACTIVA'"
                 [class.text-bg-danger]="v.estado === 'ANULADA'">{{ v.estado }}</span>
+              <span class="badge ms-1"
+                [class.text-bg-warning]="v.estado_pago === 'PENDIENTE_PAGO'"
+                [class.text-bg-success]="v.estado_pago === 'PAGADA'"
+                [class.text-bg-danger]="v.estado_pago === 'RECHAZADA'">{{ v.estado_pago }}</span>
+              <span class="badge ms-1 text-bg-light text-dark">{{ v.estado_entrega }}</span>
             </td>
             <td class="text-end">
-              @if (v.estado === 'BORRADOR') {
-                <button class="btn btn-sm btn-success" (click)="confirmar(v)"><i class="bi bi-check2-circle"></i></button>
+              @if (v.estado === 'ACTIVA') {
+                @if (v.estado_pago === 'PENDIENTE_PAGO') {
+                  <button class="btn btn-sm btn-outline-primary me-1" (click)="registrarComprobante(v)" title="Registrar comprobante de pago"><i class="bi bi-receipt"></i></button>
+                  @if (v.comprobantes && v.comprobantes.length) {
+                    <button class="btn btn-sm btn-success me-1" (click)="verificarPago(v)" title="Verificar pago"><i class="bi bi-cash-coin"></i></button>
+                  }
+                }
+                @if (v.estado_pago === 'PAGADA' && v.estado_entrega !== 'ENTREGADA') {
+                  <button class="btn btn-sm btn-success me-1" (click)="entregar(v)" title="Entregar producto"><i class="bi bi-box-arrow-up"></i> Entregar</button>
+                }
+                <button class="btn btn-sm btn-outline-danger me-1" (click)="anular(v)" title="Anular"><i class="bi bi-x-octagon"></i></button>
               }
-              @if (v.estado === 'CONFIRMADA') {
-                <button class="btn btn-sm btn-outline-danger" (click)="anular(v)"><i class="bi bi-x-octagon"></i> Anular</button>
-              }
+              <button class="btn btn-sm btn-outline-secondary" (click)="descargarBoleta(v)" title="Boleta PDF"><i class="bi bi-file-earmark-pdf"></i></button>
             </td>
           </tr>
         } @empty {

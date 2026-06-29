@@ -118,6 +118,7 @@
             @case ('compras') { <tr><th>#</th><th>Factura</th><th>Proveedor</th><th>Fecha</th><th class="text-end">Total</th></tr> }
             @case ('ventas') { <tr><th>#</th><th>Boleta</th><th>Fecha</th><th class="text-end">Total</th><th>Estado</th></tr> }
             @case ('bajas') { <tr><th>#</th><th>N° Baja</th><th>Fecha</th><th>Estado</th><th>Motivo</th></tr> }
+            @case ('ajustes') { <tr><th>#</th><th>Fecha</th><th>Tipo</th><th>Estado</th><th>Motivo</th></tr> }
             @case ('inventario') { <tr><th>Codigo</th><th>Producto</th><th>Tipo</th><th class="text-end">Cantidad</th><th class="text-end">Costo</th><th class="text-end">Valor</th></tr> }
             @case ('trazabilidad') { <tr><th>Modulo</th><th>Accion</th><th>Entidad</th><th>Usuario</th><th>Fecha</th></tr> }
           }
@@ -128,6 +129,7 @@
               @case ('compras') { <tr><td>{{ it.id }}</td><td>{{ it.numero_factura }}</td><td>{{ it.proveedor__nombre }}</td><td>{{ it.fecha_compra }}</td><td class="text-end">{{ it.total_compra | number: '1.2-2' }}</td></tr> }
               @case ('ventas') { <tr><td>{{ it.id }}</td><td>{{ it.numero_boleta }}</td><td>{{ it.fecha_venta | date: 'short' }}</td><td class="text-end">{{ it.total_venta | number: '1.2-2' }}</td><td>{{ it.estado }}</td></tr> }
               @case ('bajas') { <tr><td>{{ it.id }}</td><td>{{ it.numero_baja }}</td><td>{{ it.fecha_baja | date: 'short' }}</td><td>{{ it.estado }}</td><td>{{ it.motivo_baja__nombre }}</td></tr> }
+              @case ('ajustes') { <tr><td>{{ it.id }}</td><td>{{ it.fecha_ajuste | date: 'short' }}</td><td>{{ it.tipo_ajuste }}</td><td>{{ it.estado }}</td><td>{{ it.motivo }}</td></tr> }
               @case ('inventario') { <tr><td>{{ it.codigo }}</td><td>{{ it.nombre }}</td><td>{{ it.tipo }}</td><td class="text-end">{{ it.cantidad }}</td><td class="text-end">{{ it.costo_referencial | number: '1.2-4' }}</td><td class="text-end">{{ it.valor | number: '1.2-2' }}</td></tr> }
               @case ('trazabilidad') { <tr><td>{{ it.modulo }}</td><td>{{ it.accion }}</td><td>{{ it.entidad }} #{{ it.id_entidad }}</td><td>{{ it.usuario__username }}</td><td>{{ it.fecha_operacion | date: 'short' }}</td></tr> }
             }

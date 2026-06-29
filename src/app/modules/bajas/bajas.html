@@ -39,7 +39,10 @@
             <td><span class="badge badge-estado" [class.text-bg-success]="b.estado === 'CONFIRMADA'" [class.text-bg-warning]="b.estado === 'BORRADOR'">{{ b.estado }}</span></td>
             <td class="text-end">
               @if (b.estado === 'BORRADOR') {
-                <button class="btn btn-sm btn-success" (click)="confirmar(b)"><i class="bi bi-check2-circle"></i> Confirmar</button>
+                <button class="btn btn-sm btn-success me-1" (click)="confirmar(b)"><i class="bi bi-check2-circle"></i> Confirmar</button>
+              }
+              @if (b.estado === 'CONFIRMADA') {
+                <button class="btn btn-sm btn-outline-secondary" (click)="descargarBoleta(b)" title="Boleta PDF"><i class="bi bi-file-earmark-pdf"></i></button>
               }
             </td>
           </tr>
@@ -94,23 +97,13 @@
           </div>
 
           <table class="table table-sm">
-            <thead><tr><th>Producto</th><th>Lote</th><th style="width:120px">Cantidad</th><th></th></tr></thead>
+            <thead><tr><th>Producto</th><th style="width:120px">Cantidad</th><th></th></tr></thead>
             <tbody>
               @for (d of detalles(); track $index) {
                 <tr>
                   <td>
-                    <select class="form-select form-select-sm" [(ngModel)]="d.producto" (ngModelChange)="onProducto(d)">
+                    <select class="form-select form-select-sm" [(ngModel)]="d.producto">
                       @for (p of productos(); track p.id) { <option [value]="p.id">{{ p.nombre }} (stock {{ p.stock_actual ?? 0 }})</option> }
-                    </select>
-                  </td>
-                  <td>
-                    <select class="form-select form-select-sm" [(ngModel)]="d.capa">
-                      <option [ngValue]="null">Automatico (FIFO)</option>
-                      @for (l of lotesDe(+d.producto); track l.id) {
-                        <option [ngValue]="l.id">
-                          {{ l.numero_lote || ('#' + l.id) }} · venc {{ l.fecha_vencimiento || 's/f' }} · disp {{ l.cantidad_disponible }}
-                        </option>
-                      }
                     </select>
                   </td>
                   <td><input type="number" class="form-control form-control-sm" [(ngModel)]="d.cantidad" /></td>

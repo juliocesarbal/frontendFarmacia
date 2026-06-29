@@ -1,21 +1,81 @@
-<h4 class="mb-3">Analitica K-means</h4>
-<p class="text-muted">Segmentacion de medicamentos por rotacion, consumo, costo y stock.</p>
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-1">
+  <h4 class="mb-0 card-title-brand"><i class="bi bi-graph-up me-2"></i>Analitica K-means</h4>
+  @if (resultado()) {
+    <button class="btn btn-sm btn-outline-success" (click)="exportar()" [disabled]="exportando()">
+      <i class="bi bi-file-earmark-excel"></i> {{ exportando() ? 'Exportando...' : 'Exportar Excel' }}
+    </button>
+  }
+</div>
+<p class="text-muted small">Segmentacion de medicamentos por rotacion, consumo, costo y stock.</p>
 
+<!-- Configuracion -->
 <div class="card border-0 shadow-sm mb-3">
-  <div class="card-body d-flex align-items-end gap-2">
+  <div class="card-body d-flex align-items-end gap-3 flex-wrap">
     <div>
-      <label class="form-label">Numero de clusters (k)</label>
+      <label class="form-label small fw-semibold mb-1">Numero de clusters (k)</label>
       <input type="number" class="form-control" style="max-width: 120px" [(ngModel)]="k" min="2" max="8" />
     </div>
     <button type="button" class="btn btn-primary" (click)="ejecutar()" [disabled]="cargando()">
-      <i class="bi bi-cpu"></i> {{ cargando() ? 'Procesando...' : 'Ejecutar K-means' }}
+      <i class="bi bi-cpu me-1"></i>{{ cargando() ? 'Procesando...' : 'Ejecutar K-means' }}
     </button>
+    <div class="text-muted small ms-auto d-none d-md-block">
+      Agrupa los productos en k segmentos segun su comportamiento de inventario.
+    </div>
   </div>
 </div>
 
 @if (error()) { <div class="alert alert-warning">{{ error() }}</div> }
 
+<!-- Cargando -->
+@if (cargando()) {
+  <div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5 text-muted">
+      <div class="spinner-border mb-3" role="status" style="color:#731A1B"></div>
+      <div>Ejecutando segmentacion K-means...</div>
+    </div>
+  </div>
+}
+
+<!-- Estado vacio -->
+@if (!cargando() && !resultado()) {
+  <div class="card border-0 shadow-sm">
+    <div class="card-body text-center py-5 text-muted">
+      <i class="bi bi-graph-up-arrow" style="font-size:2.5rem;opacity:.35"></i>
+      <p class="mt-3 mb-0">Configura el numero de clusters y ejecuta el analisis para ver los segmentos.</p>
+    </div>
+  </div>
+}
+
 @if (resultado(); as r) {
+  <!-- Resumen -->
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#f9e5e5;color:#731A1B"><i class="bi bi-boxes"></i></div>
+        <div><div class="stat-num">{{ totalProductos() }}</div><div class="stat-lbl">Productos analizados</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#e8f0f9;color:#004f91"><i class="bi bi-diagram-3"></i></div>
+        <div><div class="stat-num">{{ r.numero_clusters }}</div><div class="stat-lbl">Clusters</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#dcfce7;color:#166534"><i class="bi bi-calendar3"></i></div>
+        <div><div class="stat-num" style="font-size:.95rem">{{ r.fecha_ejecucion | date: 'short' }}</div><div class="stat-lbl">Ejecutado</div></div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#f6ecd9;color:#d97706"><i class="bi bi-sliders"></i></div>
+        <div><div class="stat-num" style="font-size:.8rem;line-height:1.2">{{ (r.variables_usadas || []).join(', ') }}</div><div class="stat-lbl">Variables</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Distribucion -->
   <div class="card border-0 shadow-sm mb-3">
     <div class="card-header bg-white fw-semibold"><i class="bi bi-bar-chart me-1"></i>Distribucion de productos por cluster</div>
     <div class="card-body">
@@ -23,7 +83,7 @@
         <div class="mb-2">
           <div class="d-flex justify-content-between small mb-1">
             <span><span class="legend-dot" [style.background]="color(c.numero_cluster)"></span>{{ c.nombre_cluster }} — {{ c.descripcion }}</span>
-            <span class="fw-semibold">{{ c.productos.length }}</span>
+            <span class="fw-semibold">{{ c.productos.length }} ({{ porcentaje(c) | number: '1.0-0' }}%)</span>
           </div>
           <div class="bar-track">
             <div class="bar-fill" [style.width.%]="c.productos.length / maxProductos() * 100" [style.background]="color(c.numero_cluster)"></div>
@@ -33,31 +93,65 @@
     </div>
   </div>
 
+  <!-- Cards por cluster (altura acotada con scroll: ninguna estira la pagina) -->
   <div class="row g-3">
     @for (c of r.clusters; track c.numero_cluster) {
-      <div class="col-md-6">
+      <div class="col-md-6 col-xxl-4">
         <div class="card border-0 shadow-sm h-100">
-          <div class="card-header bg-primary text-white">
-            {{ c.nombre_cluster }} — {{ c.descripcion }}
-            <span class="badge text-bg-light float-end">{{ c.productos.length }} prod.</span>
+          <div class="card-header text-white d-flex justify-content-between align-items-center" [style.background]="color(c.numero_cluster)">
+            <span class="fw-semibold text-truncate"><i class="bi bi-collection me-1"></i>{{ c.nombre_cluster }}</span>
+            <span class="badge text-bg-light">{{ c.productos.length }} prod.</span>
           </div>
-          <div class="table-responsive">
+          <div class="px-3 pt-2 small text-muted">{{ c.descripcion }}</div>
+
+          <!-- mini-stats -->
+          <div class="d-flex text-center border-bottom px-2 py-2">
+            <div class="flex-fill">
+              <div class="fw-bold">{{ promRotacion(c) | number: '1.2-2' }}</div>
+              <div class="text-muted" style="font-size:.7rem">Rotacion prom.</div>
+            </div>
+            <div class="flex-fill border-start">
+              <div class="fw-bold">{{ sumaConsumo(c) | number: '1.0-0' }}</div>
+              <div class="text-muted" style="font-size:.7rem">Consumo total</div>
+            </div>
+            <div class="flex-fill border-start">
+              <div class="fw-bold">{{ sumaCosto(c) | number: '1.0-0' }}</div>
+              <div class="text-muted" style="font-size:.7rem">Costo (Bs)</div>
+            </div>
+          </div>
+
+          <!-- buscador dentro del cluster -->
+          <div class="p-2 border-bottom">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+              <input class="form-control" placeholder="Buscar producto en este cluster..."
+                     [ngModel]="buscar(c)" (ngModelChange)="setBuscar(c, $event)" />
+            </div>
+          </div>
+
+          <!-- tabla con altura fija + thead pegajoso -->
+          <div class="table-responsive" style="max-height: 320px; overflow-y: auto">
             <table class="table table-sm tabla-compacta mb-0">
-              <thead class="table-light">
-                <tr><th>Codigo</th><th>Producto</th><th class="text-end">Rotacion</th><th class="text-end">Consumo</th><th class="text-end">Stock</th></tr>
+              <thead class="table-light" style="position: sticky; top: 0; z-index: 1">
+                <tr><th>Codigo</th><th>Producto</th><th class="text-end">Rot.</th><th class="text-end">Cons.</th><th class="text-end">Stock</th></tr>
               </thead>
               <tbody>
-                @for (p of c.productos; track p.codigo) {
+                @for (p of productosFiltrados(c); track p.codigo) {
                   <tr>
                     <td>{{ p.codigo }}</td>
-                    <td>{{ p.nombre }}</td>
+                    <td class="text-truncate" style="max-width: 160px" [title]="p.nombre">{{ p.nombre }}</td>
                     <td class="text-end">{{ p.rotacion | number: '1.2-2' }}</td>
                     <td class="text-end">{{ p.consumo_total | number: '1.0-0' }}</td>
-                    <td class="text-end">{{ p.stock_actual }}</td>
+                    <td class="text-end">{{ p.stock_actual | number: '1.0-0' }}</td>
                   </tr>
+                } @empty {
+                  <tr><td colspan="5" class="text-center text-muted py-3">Sin coincidencias.</td></tr>
                 }
               </tbody>
             </table>
+          </div>
+          <div class="card-footer bg-white small text-muted py-1">
+            Mostrando {{ productosFiltrados(c).length }} de {{ c.productos.length }}
           </div>
         </div>
       </div>

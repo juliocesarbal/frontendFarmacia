@@ -1,22 +1,9 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 
-interface PorVencer {
-  capa_id: number;
-  producto_id: number;
-  codigo: string;
-  producto: string;
-  lote: string;
-  fecha_vencimiento: string;
-  dias_restantes: number;
-  vencido: boolean;
-  cantidad_disponible: string;
-  costo_unitario: string;
-}
-
-interface StockCritico {
+interface StockItem {
   producto_id: number;
   codigo: string;
   producto: string;
@@ -27,10 +14,8 @@ interface StockCritico {
 }
 
 interface AlertasResp {
-  dias: number;
-  por_vencer: PorVencer[];
-  stock_critico: StockCritico[];
-  resumen: { por_vencer: number; vencidos: number; stock_critico: number };
+  stock_critico: StockItem[];
+  resumen: { stock_critico: number };
 }
 
 @Component({
@@ -40,11 +25,21 @@ interface AlertasResp {
   templateUrl: './alertas.html',
 })
 export class AlertasComponent implements OnInit {
-  dias = 30;
   cargando = signal(false);
-  porVencer = signal<PorVencer[]>([]);
-  stockCritico = signal<StockCritico[]>([]);
-  resumen = signal({ por_vencer: 0, vencidos: 0, stock_critico: 0 });
+  stockCritico = signal<StockItem[]>([]);
+  resumen = signal({ stock_critico: 0 });
+
+  page = signal(1);
+  readonly pageSize = 20;
+
+  total = computed(() => this.stockCritico().length);
+  totalPaginas = computed(() => Math.max(1, Math.ceil(this.total() / this.pageSize)));
+  paginados = computed(() => {
+    const start = (this.page() - 1) * this.pageSize;
+    return this.stockCritico().slice(start, start + this.pageSize);
+  });
+  desde = computed(() => (this.total() === 0 ? 0 : (this.page() - 1) * this.pageSize + 1));
+  hasta = computed(() => Math.min(this.page() * this.pageSize, this.total()));
 
   constructor(private api: ApiService) {}
 
@@ -54,14 +49,22 @@ export class AlertasComponent implements OnInit {
 
   cargar(): void {
     this.cargando.set(true);
-    this.api.raw<AlertasResp>('reportes/alertas/', { dias: this.dias }).subscribe({
+    this.page.set(1);
+    this.api.raw<AlertasResp>('reportes/alertas/').subscribe({
       next: (r) => {
-        this.porVencer.set(r.por_vencer);
         this.stockCritico.set(r.stock_critico);
         this.resumen.set(r.resumen);
         this.cargando.set(false);
       },
       error: () => this.cargando.set(false),
     });
+  }
+
+  anterior(): void {
+    if (this.page() > 1) this.page.update((p) => p - 1);
+  }
+
+  siguiente(): void {
+    if (this.page() < this.totalPaginas()) this.page.update((p) => p + 1);
   }
 }

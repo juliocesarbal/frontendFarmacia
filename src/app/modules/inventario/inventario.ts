@@ -95,8 +95,4 @@ export class InventarioComponent implements OnInit {
   valorLote(l: Lote): number {
     return Number(l.cantidad_disponible) * Number(l.costo_unitario);
   }
-
-  vencido(l: Lote): boolean {
-    return !!l.fecha_vencimiento && new Date(l.fecha_vencimiento) < new Date();
-  }
 }

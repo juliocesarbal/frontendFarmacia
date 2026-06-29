@@ -1,14 +1,14 @@
 <h4 class="mb-3 card-title-brand"><i class="bi bi-clock-history me-2"></i>Trazabilidad de operaciones</h4>
 
 <div class="d-flex gap-2 mb-3" style="max-width: 480px">
-  <select class="form-select" [(ngModel)]="modulo" (change)="cargar()">
+  <select class="form-select" [(ngModel)]="modulo" (change)="filtrar()">
     <option value="">Todos los modulos</option>
     <option value="compras">Compras</option>
     <option value="ventas">Ventas</option>
     <option value="bajas">Bajas</option>
     <option value="ajustes">Ajustes</option>
   </select>
-  <button class="btn btn-outline-primary" (click)="cargar()"><i class="bi bi-arrow-clockwise"></i></button>
+  <button class="btn btn-outline-primary" (click)="filtrar()"><i class="bi bi-arrow-clockwise"></i></button>
 </div>
 
 <div class="card border-0 shadow-sm">
@@ -31,5 +31,21 @@
         }
       </tbody>
     </table>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
+    <span class="small text-muted">
+      @if (cargandoLista()) { Cargando… }
+      @else { Mostrando {{ desde() }}–{{ hasta() }} de {{ total() }} }
+    </span>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-sm btn-outline-secondary" (click)="anterior()" [disabled]="page() <= 1 || cargandoLista()">
+        <i class="bi bi-chevron-left"></i> Anterior
+      </button>
+      <span class="small">Pagina {{ page() }} de {{ totalPaginas() }}</span>
+      <button class="btn btn-sm btn-outline-secondary" (click)="siguiente()" [disabled]="page() >= totalPaginas() || cargandoLista()">
+        Siguiente <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
   </div>
 </div>

@@ -73,7 +73,7 @@
           </div>
 
           <table class="table table-sm">
-            <thead><tr><th>Producto</th><th>Cantidad</th><th>Costo unit.</th><th>Lote</th><th>Vencimiento</th><th>Subtotal</th><th></th></tr></thead>
+            <thead><tr><th>Producto</th><th>Cantidad</th><th>Costo unit.</th><th>Vencimiento</th><th>Subtotal</th><th></th></tr></thead>
             <tbody>
               @for (d of detalles(); track $index) {
                 <tr>
@@ -84,7 +84,6 @@
                   </td>
                   <td><input type="number" class="form-control form-control-sm" [(ngModel)]="d.cantidad" /></td>
                   <td><input type="number" class="form-control form-control-sm" [(ngModel)]="d.costo_unitario" /></td>
-                  <td><input class="form-control form-control-sm" [(ngModel)]="d.numero_lote" placeholder="Lote" style="min-width:90px" /></td>
                   <td><input type="date" class="form-control form-control-sm" [(ngModel)]="d.fecha_vencimiento" style="min-width:140px" /></td>
                   <td class="text-end">{{ (+d.cantidad * +d.costo_unitario) | number: '1.2-2' }}</td>
                   <td><button class="btn btn-sm btn-outline-danger" (click)="quitarLinea($index)"><i class="bi bi-trash"></i></button></td>
