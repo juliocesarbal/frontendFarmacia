@@ -75,6 +75,16 @@ export class RolesComponent implements OnInit {
   }
 
   eliminar(r: Rol): void {
-    this.api.remove('roles', r.id).subscribe(() => this.cargar());
+    const ok = confirm(
+      `¿Eliminar el rol "${r.nombre}"?\n\n` +
+        'Esta accion es permanente y los usuarios que lo tengan asignado ' +
+        'perderan sus permisos asociados.',
+    );
+    if (!ok) return;
+    this.api.remove('roles', r.id).subscribe({
+      next: () => this.cargar(),
+      error: (e) =>
+        alert(e?.error?.detail || 'No se pudo eliminar el rol. Verifique que no este en uso.'),
+    });
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, map, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { LoginResponse, Usuario } from '../models';
 
@@ -47,6 +47,25 @@ export class AuthService {
 
   guardarAccess(token: string): void {
     localStorage.setItem(ACCESS_KEY, token);
+  }
+
+  /**
+   * Renueva el access token usando el refresh token guardado.
+   * SimpleJWT rota el refresh (ROTATE_REFRESH_TOKENS), asi que si viene uno
+   * nuevo tambien se persiste. Devuelve el nuevo access token.
+   */
+  refrescar(): Observable<string> {
+    const refresh = this.refreshToken;
+    if (!refresh) return throwError(() => new Error('Sin refresh token'));
+    return this.http
+      .post<{ access: string; refresh?: string }>(`${this.api}/auth/refresh/`, { refresh })
+      .pipe(
+        tap((res) => {
+          localStorage.setItem(ACCESS_KEY, res.access);
+          if (res.refresh) localStorage.setItem(REFRESH_KEY, res.refresh);
+        }),
+        map((res) => res.access),
+      );
   }
 
   tienePermiso(codigo: string): boolean {

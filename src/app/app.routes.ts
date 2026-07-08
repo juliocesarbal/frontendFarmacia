@@ -21,34 +21,48 @@ export const routes: Routes = [
         path: 'productos',
         loadComponent: () =>
           import('./modules/productos/productos').then((m) => m.ProductosComponent),
+        data: { permiso: 'productos.ver' },
+        canActivate: [roleGuard],
       },
       {
         path: 'proveedores',
         loadComponent: () =>
           import('./modules/proveedores/proveedores').then((m) => m.ProveedoresComponent),
+        data: { permiso: 'proveedores.ver' },
+        canActivate: [roleGuard],
       },
       {
         path: 'compras',
         loadComponent: () =>
           import('./modules/compras/compras').then((m) => m.ComprasComponent),
+        data: { permiso: 'compras.ver' },
+        canActivate: [roleGuard],
       },
       {
         path: 'ventas',
         loadComponent: () =>
           import('./modules/ventas/ventas').then((m) => m.VentasComponent),
+        data: { permiso: 'ventas.ver' },
+        canActivate: [roleGuard],
       },
       {
         path: 'bajas',
         loadComponent: () => import('./modules/bajas/bajas').then((m) => m.BajasComponent),
+        data: { permiso: 'bajas.ver' },
+        canActivate: [roleGuard],
       },
       {
         path: 'ajustes',
         loadComponent: () => import('./modules/ajustes/ajustes').then((m) => m.AjustesComponent),
+        data: { permiso: 'ajustes.ver' },
+        canActivate: [roleGuard],
       },
       {
         path: 'inventario',
         loadComponent: () =>
           import('./modules/inventario/inventario').then((m) => m.InventarioComponent),
+        data: { permiso: 'inventario.ver' },
+        canActivate: [roleGuard],
       },
       {
         path: 'reportes',
@@ -60,7 +74,7 @@ export const routes: Routes = [
         path: 'importaciones',
         loadComponent: () =>
           import('./modules/importaciones/importaciones').then((m) => m.ImportacionesComponent),
-        data: { permiso: 'importaciones.gestionar' },
+        data: { permiso: 'importacion.gestionar' },
         canActivate: [roleGuard],
       },
       {
@@ -95,7 +109,7 @@ export const routes: Routes = [
         path: 'catalogos',
         loadComponent: () =>
           import('./modules/catalogos/catalogos').then((m) => m.CatalogosComponent),
-        data: { permiso: 'catalogos.gestionar' },
+        data: { permiso: 'catalogo.gestionar' },
         canActivate: [roleGuard],
       },
       {

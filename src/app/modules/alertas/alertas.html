@@ -1,6 +1,15 @@
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
   <h4 class="mb-0 card-title-brand"><i class="bi bi-exclamation-triangle me-2"></i>Alertas de inventario</h4>
-  <button class="btn btn-sm btn-outline-secondary" (click)="cargar()"><i class="bi bi-arrow-clockwise"></i></button>
+  <div class="d-flex align-items-center gap-2">
+    <label class="small text-muted mb-0" for="dias-venc">Vencen en</label>
+    <select id="dias-venc" class="form-select form-select-sm" style="width:auto" [(ngModel)]="dias" (change)="cargar()">
+      <option [ngValue]="15">15 dias</option>
+      <option [ngValue]="30">30 dias</option>
+      <option [ngValue]="60">60 dias</option>
+      <option [ngValue]="90">90 dias</option>
+    </select>
+    <button class="btn btn-sm btn-outline-secondary" (click)="cargar()"><i class="bi bi-arrow-clockwise"></i></button>
+  </div>
 </div>
 
 <!-- Resumen -->
@@ -9,6 +18,64 @@
     <div class="stat-card">
       <div class="stat-icon" style="background:#f9e5e5;color:#731A1B"><i class="bi bi-box-seam"></i></div>
       <div><div class="stat-num">{{ resumen().stock_critico }}</div><div class="stat-lbl">Stock critico</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fdf3e0;color:#a4670f"><i class="bi bi-calendar-x"></i></div>
+      <div><div class="stat-num">{{ resumen().proximos_vencer }}</div><div class="stat-lbl">Lotes por vencer ({{ resumen().dias_vencimiento }} dias)</div></div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f9e5e5;color:#a1121d"><i class="bi bi-exclamation-octagon"></i></div>
+      <div><div class="stat-num">{{ resumen().vencidos }}</div><div class="stat-lbl">Lotes vencidos</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Proximos a vencer -->
+<div class="card border-0 shadow-sm mb-3">
+  <div class="card-header bg-white fw-semibold"><i class="bi bi-calendar-x me-1"></i>Lotes proximos a vencer o vencidos</div>
+  <div class="table-responsive">
+    <table class="table table-hover tabla-compacta mb-0">
+      <thead class="table-light">
+        <tr><th>Codigo</th><th>Producto</th><th>Tipo</th><th class="text-end">Cant. disponible</th><th>Vencimiento</th><th class="text-end">Dias</th><th>Estado</th></tr>
+      </thead>
+      <tbody>
+        @for (v of paginadosVenc(); track v.capa_id) {
+          <tr [class.table-danger]="v.vencido">
+            <td>{{ v.codigo }}</td>
+            <td>{{ v.producto }}</td>
+            <td><span class="badge text-bg-light">{{ v.tipo }}</span></td>
+            <td class="text-end fw-semibold">{{ v.cantidad_disponible }}</td>
+            <td>{{ v.fecha_vencimiento | date: 'dd/MM/yyyy' }}</td>
+            <td class="text-end">{{ v.dias_restantes }}</td>
+            <td>
+              @if (v.vencido) { <span class="badge text-bg-danger">Vencido</span> }
+              @else { <span class="badge text-bg-warning">Por vencer</span> }
+            </td>
+          </tr>
+        } @empty {
+          <tr><td colspan="7" class="text-center text-muted py-4">Sin lotes proximos a vencer en el periodo seleccionado.</td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
+    <span class="small text-muted">
+      @if (cargando()) { Cargando… }
+      @else { Mostrando {{ desdeVenc() }}–{{ hastaVenc() }} de {{ totalVenc() }} }
+    </span>
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-sm btn-outline-secondary" (click)="anteriorVenc()" [disabled]="pageVenc() <= 1 || cargando()">
+        <i class="bi bi-chevron-left"></i> Anterior
+      </button>
+      <span class="small">Pagina {{ pageVenc() }} de {{ totalPaginasVenc() }}</span>
+      <button class="btn btn-sm btn-outline-secondary" (click)="siguienteVenc()" [disabled]="pageVenc() >= totalPaginasVenc() || cargando()">
+        Siguiente <i class="bi bi-chevron-right"></i>
+      </button>
     </div>
   </div>
 </div>
